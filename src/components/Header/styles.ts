@@ -6,8 +6,8 @@ export const HeaderContainer = styled.header`
   justify-content: space-between;
 
   img {
-    height: 3.1rem;
-    width: 2.5rem;
+    height: 4.5rem;
+    width: 3.5rem;
   }
 
   nav {
