@@ -20,6 +20,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "../../react/rocketnotes/FocoClock/src/pages/History"],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
