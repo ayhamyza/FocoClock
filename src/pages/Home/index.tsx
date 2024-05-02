@@ -11,11 +11,22 @@ import {
   TaskInput,
 } from './styles'
 
-export function Home() {
-  const { register, handleSubmit, watch } = useForm()
+interface NewCicleFormData {
+  task: string
+  minutesAmount: number
+}
 
-  function handleCreateNewCycle(data: any) {
+export function Home() {
+  const { register, handleSubmit, watch, reset } = useForm<NewCicleFormData>({
+    defaultValues: {
+      task: '',
+      minutesAmount: 0,
+    },
+  })
+
+  function handleCreateNewCycle(data: NewCicleFormData) {
     console.log(data)
+    reset()
   }
 
   const task = watch('task')
