@@ -32,7 +32,7 @@ interface Cycle {
   minutesAmount: number
   startDate: Date
   interruptedDate?: Date
-  finishedDate?: Date /* Variavel que guarda quando o ciclo foi encerrado, somente se ele for encerrado. (?) significa que o valor é opcional, pode ser nula */
+  finishedDate?: Date
 }
 
 export function Home() {
@@ -63,14 +63,11 @@ export function Home() {
         )
 
         if (secondsDifference >= totalSeconds) {
-          /* Sea diferença em segundos da data em que o ciclo foi criado for maior ou igual ao total de segundo que o ciclo deveria ter (foi definido pelo usuario). */
           setCycles((state) =>
             state.map((cycle) => {
-              /* Se o ciclo estiver completo irá interromper */
               if (cycle.id === activeCycleId) {
                 return { ...cycle, finishedDate: new Date() }
               } else {
-                /* Senão. Se o ciclo ainda não estiver completo continuará retornando o ciclo, ou seja o contador continuará rodando até que o if acima seja executado */
                 return cycle
               }
             }),
