@@ -32,6 +32,7 @@ interface Cycle {
   minutesAmount: number
   startDate: Date
   interruptedDate?: Date
+  finishedDate?: Date /* Variavel que guarda quando o ciclo foi encerrado, somente se ele for encerrado. (?) significa que o valor é opcional, pode ser nula */
 }
 
 export function Home() {
@@ -49,21 +50,44 @@ export function Home() {
 
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
 
+  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
+
   useEffect(() => {
     let interval: number
 
     if (activeCycle) {
       interval = setInterval(() => {
-        setAmountSecondsPassed(
-          differenceInSeconds(new Date(), activeCycle.startDate),
+        const secondsDifference = differenceInSeconds(
+          new Date(),
+          activeCycle.startDate,
         )
+
+        if (secondsDifference >= totalSeconds) {
+          /* Sea diferença em segundos da data em que o ciclo foi criado for maior ou igual ao total de segundo que o ciclo deveria ter (foi definido pelo usuario). */
+          setCycles((state) =>
+            state.map((cycle) => {
+              /* Se o ciclo estiver completo irá interromper */
+              if (cycle.id === activeCycleId) {
+                return { ...cycle, finishedDate: new Date() }
+              } else {
+                /* Senão. Se o ciclo ainda não estiver completo continuará retornando o ciclo, ou seja o contador continuará rodando até que o if acima seja executado */
+                return cycle
+              }
+            }),
+          )
+
+          setAmountSecondsPassed(totalSeconds)
+          clearInterval(interval)
+        } else {
+          setAmountSecondsPassed(secondsDifference)
+        }
       }, 1000)
     }
 
     return () => {
       clearInterval(interval)
     }
-  }, [activeCycle])
+  }, [activeCycle, totalSeconds, activeCycleId])
 
   function handleCreateNewCycle(data: NewCycleFormData) {
     const id = String(new Date().getTime())
@@ -82,8 +106,8 @@ export function Home() {
     reset()
   }
   function handleInterruptCycle() {
-    setCycles(
-      cycles.map((cycle) => {
+    setCycles((state) =>
+      state.map((cycle) => {
         if (cycle.id === activeCycleId) {
           return { ...cycle, interruptedDate: new Date() }
         } else {
@@ -94,7 +118,6 @@ export function Home() {
     setActiveCycleId(null)
   }
 
-  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
   const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
 
   const minutesAmount = Math.floor(currentSeconds / 60)
@@ -112,7 +135,6 @@ export function Home() {
   const task = watch('task')
   const isSubmitDisable = !task
 
-  console.log(cycles)
   return (
     <HomeContainer>
       <form onSubmit={handleSubmit(handleCreateNewCycle)}>
